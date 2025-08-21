@@ -1,5 +1,3 @@
-# tfsec:ignore:aws-s3-enable-logging
-# tfsec:ignore:aws-s3-enable-bucket-logging
 
 module "secure_bucket" {
   source             = "./modules/S3-Bucket"

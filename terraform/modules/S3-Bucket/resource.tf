@@ -1,5 +1,3 @@
-# tfsec:ignore:aws-s3-enable-logging
-# tfsec:ignore:aws-s3-enable-bucket-logging
 
 resource "aws_s3_bucket" "this" {
   bucket = var.bucket_name
@@ -10,6 +8,12 @@ resource "aws_s3_bucket" "this" {
     },
     var.tags
   )
+}
+
+resource "aws_s3_bucket_logging" "this" {
+  bucket = aws_s3_bucket.this.id
+  target_bucket = aws_s3_bucket.this.id
+  target_prefix = "log/"
 }
 
 resource "aws_s3_bucket_ownership_controls" "this" {
@@ -58,5 +62,3 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
     }
   }
 }
-
-# tfsec:ignore:aws-s3-enable-bucket-logging
