@@ -49,13 +49,13 @@ jobs:
         tfsec --version
 
     - name: 'Terraform Init'
-      run: terraform init
+      run: terraform init ./
 
     - name: 'Terraform Format'
-      run: terraform fmt
+      run: terraform fmt ./
 
     - name: 'Terraform Validate'
-      run: terraform validate
+      run: terraform validate ./
 
     - name: 'TFLint'
       run: |
@@ -66,8 +66,8 @@ jobs:
       run: tfsec .
 
     - name: 'Terraform Plan'
-      run: terraform plan -out=tfplan
+      run: terraform plan -out=tfplan ./
 
     - name: 'Terraform Apply'
       if: github.ref == 'refs/heads/main'
-      run: terraform apply -auto-approve tfplan
+      run: terraform apply -auto-approve tfplan ./
