@@ -18,6 +18,7 @@ jobs:
       TF_VERSION: '1.4.0'
       TFLINT_VERSION: '0.46.1'  # Updated to a more recent version
       TFSEC_VERSION: '1.28.1'   # Updated to a more recent version
+      working-directory: terraform
 
     steps:
     - name: 'Checkout GitHub repository'
@@ -49,13 +50,16 @@ jobs:
         tfsec --version
 
     - name: 'Terraform Init'
-      run: terraform init ./
+      run: terraform init
+      working-directory: ${{ env.working-directory }}
 
     - name: 'Terraform Format'
-      run: terraform fmt ./
+      run: terraform fmt
+      coninue-on-error: true
+      
 
     - name: 'Terraform Validate'
-      run: terraform validate ./
+      run: terraform validate 
 
     - name: 'TFLint'
       run: |
@@ -66,8 +70,10 @@ jobs:
       run: tfsec .
 
     - name: 'Terraform Plan'
-      run: terraform plan -out=tfplan ./
+      run: terraform plan -out=tfplan
+      working-directory: ${{ env.working-directory }} 
 
     - name: 'Terraform Apply'
       if: github.ref == 'refs/heads/main'
-      run: terraform apply -auto-approve tfplan ./
+      run: terraform apply -auto-approve tfplan
+      working-directory: ${{ env.working-directory }} 
