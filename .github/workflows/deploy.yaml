@@ -28,7 +28,7 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
 
       - name: Cache Terraform plugins
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             .terraform
@@ -87,7 +87,7 @@ jobs:
         run: terraform plan -out=tfplan
 
       - name: Upload Plan Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4   # ✅ updated
         with:
           name: tfplan
           path: tfplan
@@ -102,7 +102,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download Plan Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4   # ✅ updated
         with:
           name: tfplan
 
