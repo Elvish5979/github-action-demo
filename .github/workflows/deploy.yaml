@@ -5,7 +5,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: modules/S3-Bucket   # 👈 All Terraform commands will run here
+        working-directory: modules/S3-Bucket
 
     steps:
     - name: 'Checkout GitHub repository'
