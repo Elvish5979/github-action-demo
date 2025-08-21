@@ -16,9 +16,12 @@ jobs:
     env:
       AWS_REGION: 'us-east-1'
       TF_VERSION: '1.4.0'
-      TFLINT_VERSION: '0.46.1'  # Updated to a more recent version
-      TFSEC_VERSION: '1.28.1'   # Updated to a more recent version
-      working-directory: terraform
+      TFLINT_VERSION: '0.46.1'
+      TFSEC_VERSION: '1.28.1'
+
+    defaults:
+      run:
+        working-directory: terraform   # 👈 All Terraform commands run inside terraform/
 
     steps:
     - name: 'Checkout GitHub repository'
@@ -51,15 +54,13 @@ jobs:
 
     - name: 'Terraform Init'
       run: terraform init
-      working-directory: ${{ env.working-directory }}
 
     - name: 'Terraform Format'
       run: terraform fmt
-      coninue-on-error: true
-      
+      continue-on-error: true   # ✅ fixed typo
 
     - name: 'Terraform Validate'
-      run: terraform validate 
+      run: terraform validate
 
     - name: 'TFLint'
       run: |
@@ -71,9 +72,7 @@ jobs:
 
     - name: 'Terraform Plan'
       run: terraform plan -out=tfplan
-      working-directory: ${{ env.working-directory }} 
 
     - name: 'Terraform Apply'
       if: github.ref == 'refs/heads/main'
       run: terraform apply -auto-approve tfplan
-      working-directory: ${{ env.working-directory }} 
