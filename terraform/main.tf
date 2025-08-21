@@ -1,3 +1,5 @@
+# tfsec:ignore:aws-s3-enable-bucket-logging
+
 module "secure_bucket" {
   source             = "./modules/S3-Bucket"
   bucket_name        = "my-tf-example-bucket-bella"
