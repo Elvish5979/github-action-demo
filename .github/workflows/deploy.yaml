@@ -55,14 +55,13 @@ jobs:
       - name: 'Run tfsec'
         run: tfsec .
 
-  terraform:
-    name: 'Terraform Plan and Apply'
+  terraform-plan:
+    name: 'Terraform Plan'
     runs-on: ubuntu-latest
-    needs: [lint, security]   # 👈 only runs if lint + security pass
+    needs: [lint, security]
     defaults:
       run:
         working-directory: terraform
-
     env:
       AWS_REGION: 'us-east-1'
 
@@ -94,6 +93,48 @@ jobs:
 
       - name: 'Terraform Plan'
         run: terraform plan -out=tfplan
+
+      - name: 'Upload Plan Artifact'
+        uses: actions/upload-artifact@v3
+        with:
+          name: tfplan
+          path: terraform/tfplan
+
+  terraform-apply:
+    name: 'Terraform Apply'
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+    defaults:
+      run:
+        working-directory: terraform
+    environment: DEV   # 👈 requires manual approval in repo settings
+    env:
+      AWS_REGION: 'us-east-1'
+
+    steps:
+      - name: 'Checkout GitHub repository'
+        uses: actions/checkout@v2
+
+      - name: 'Configure AWS credentials'
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: 'Set up Terraform'
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.4.0
+
+      - name: 'Terraform Init'
+        run: terraform init
+
+      - name: 'Download Plan Artifact'
+        uses: actions/download-artifact@v3
+        with:
+          name: tfplan
+          path: terraform
 
       - name: 'Terraform Apply'
         if: github.ref == 'refs/heads/main'
